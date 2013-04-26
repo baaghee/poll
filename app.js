@@ -14,7 +14,7 @@ var express = require('express')
   , passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy
   , MongoStore = require('connect-mongo')(express)
-  , ldapauth = require('./node-ldapauth/ldapauth')
+  //, ldapauth = require('./node-ldapauth/ldapauth')
   , jade_browser = require('jade-browser')
   , moment = require('moment')
   , nodemailer = require("nodemailer")
@@ -31,7 +31,17 @@ passport.use(new LocalStrategy({
 		passReqToCallback: true
 	},
 	function(req, username, password, done) {
-					
+		Admin.findOne({name:username}, function(err, user){
+			if(err) throw err;
+			if(user){
+				req.session.admin = true;
+				return done(null, username);
+			}else{
+				return done(null, false, {message: "Incorrect login details"});
+			}
+
+		}); 
+		return;			
 		ldapauth.authenticate(
 			'ldap', 
 			'alliedinsure.com.mv', 
@@ -89,7 +99,13 @@ var Submitted = db.model("submitted", mongoose.Schema({
 	poll_id:'string',
 	answers:'array',
 	user:'string',
-	date:'date'
+	date:'date',
+	cname:'string',
+	cemail:'string',
+	cvilla:'string',
+	cnationality:'string',
+	cfrom:'string',
+	cto:'string'
 },{strict:false}));
 
 var Admin = db.model("admins", mongoose.Schema({
@@ -182,7 +198,7 @@ app.post('/create-poll', authenticate, function(req,res){
 		res.json(poll);
 	});
 });
-app.get('/new-poll', authenticate, function(req,res){
+app.get('/new-poll',  function(req,res){
 	res.render('new-poll');
 });
 app.get('/all-polls', function(req,res){
@@ -191,7 +207,7 @@ app.get('/all-polls', function(req,res){
 		res.json(docs);
 	})
 });
-app.get('/get-poll/:id', authenticate, function(req, res){
+app.get('/get-poll/:id', function(req, res){
 	var id = req.params.id;
 	Poll.findOne({_id:id}, function(err, poll){
 		if(err) throw err;
@@ -203,30 +219,30 @@ app.get('/get-poll/:id', authenticate, function(req, res){
 	});
 });
 
-app.post('/submit-poll', authenticate, function(req, res){
+app.post('/submit-poll', function(req, res){
 	var answers = JSON.parse(req.body.data);
 	var id = req.body.poll;
 	var data = {
 		poll_id:id,
 		answers:answers,
-		user:req.session.passport.user,
-		date:new Date()
+		//user:req.session.passport.user,
+		date:new Date(),
+		cname:req.body.cname,
+		cemail:req.body.cemail,
+		cvilla:req.body.cvilla,
+		cnationality:req.body.cnationality,
+		cfrom:req.body.cfrom,
+		cto:req.body.cto
 	}
-	Submitted.findOne({poll_id:id, user:data.user}, function(err, p){
+
+	var poll = new Submitted(data);
+	poll.save(function(err, doc){
 		if(err) throw err;
-		if(p){
-			return res.json({error:"Already submitted!"});
-		}
-		var poll = new Submitted(data);
-		poll.save(function(err, doc){
-			if(err) throw err;
-			req.session.k = true;
-			res.json(doc);
-		});	
-	});
+		res.json(doc);
+	});	
 });
 
-app.get('/poll/:id', authenticate, function(req, res){
+app.get('/poll/:id', function(req, res){
 	var id = req.params.id;
 	
 	var data = {};
@@ -243,27 +259,12 @@ app.get('/poll/:id', authenticate, function(req, res){
 	});
 });
 app.get('/k', authenticate, function(req,res){
-	if(!req.session.k){
-		return res.render('index',{heading:"K", message:""});
-	}
-	res.render('index',{heading:"Thank you :)", message:"Your poll has been submitted. Results will be announced soon."});
+	res.render('index',{heading:"Thank you :)", message:"Your poll has been submitted. "});
 });
 app.get('/:poll', function(req,res){
-	if (!req.isAuthenticated()) {
-		req.session.redirect = req.url;
-		return res.redirect('/');
-	}
-	var id = req.params.poll;
-	//check if user has taken it
-	Submitted.findOne({user:req.session.passport.user, poll_id:id}, function(err, poll){
-		if(err) throw err;
-		if(poll && req.session.admin == false){
-			return res.render('index',{heading:"Hold on!", message:"It seems that you have already taken this poll!"});
-		}
-		Poll.findOne({_id:id}, function(err, poll){
-			res.render('poll', {poll:id});
-		});		
-	});
+	Poll.findOne({_id:req.params.poll}, function(err, poll){
+		res.render('poll', {poll:req.params.poll});
+	});		
 });
 app.post("/invite", function(req,res){
 	var emails = req.body.emails;

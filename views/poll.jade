@@ -4,16 +4,23 @@ block content
 	-if (typeof poll != 'undefined' && poll != ""){
 		script Poll.loadpoll("#{poll}");
 	-}
-	- if(admin)
-		section.well
-			h4 Notify staffs
-			textarea#send-email-recipients(placeholder="Separated by a comma. Ex: ahmed@alliedmaldives.net, everyone@alliedmaldives.net", style="width:100%;box-sizing: border-box;height:140px")
-			button.btn.btn-info#send-email(data-poll=poll) Send Email
 	section.container
 		h2#poll-title
 		hr
 	section.container#questions_container
 		section.span8
+			section.well
+				h2 Customer details
+				section
+					input(type='text', placeholder='name')#cname
+				section
+					input(type='text', placeholder='email')#cemail
+				section
+					input(type='text', placeholder='villa no')#cvilla
+				section
+					input(type='text', placeholder='Staying from').dp#cfrom &nbsp; 
+					input(type='text', placeholder='Staying to').dp#cto 
+				include components/countrylist
 			section#questions
 			section.submit.well
 				button.btn.btn-primary.btn-large#submit-survey All done, submit my poll
@@ -36,3 +43,4 @@ block content
 		div.modal-footer
 			button.btn(data-dismiss="modal",aria-hidden="true") close
 			button.btn.btn-primary Save changes 
+	script $('.dp').datepicker()

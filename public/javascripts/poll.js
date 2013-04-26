@@ -112,7 +112,23 @@ $(function(){
 			entry.answer = answer;
 			data.push(entry);
 		});
-		$.post('/submit-poll', {data:JSON.stringify(data), poll:id}, function(res){
+		var cname = $("#cname").val();
+		var cemail = $("#cemail").val();
+		var cvilla = $("#cvilla").val();
+		var cnationality = $("#cnationality").val();
+		var cfrom = $("#cfrom").val();
+		var cto = $("#cto").val();
+		var post = {
+			data:JSON.stringify(data), 
+			poll:id,
+			cname:cname,
+			cemail:cemail,
+			cvilla:cvilla,
+			cnationality:cnationality,
+			cfrom:cfrom,
+			cto:cto
+		}
+		$.post('/submit-poll', post, function(res){
 			if(res._id){
 					window.location = "http://" + window.location.host + "/k";
 			}
