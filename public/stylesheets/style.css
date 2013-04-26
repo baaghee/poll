@@ -1,0 +1,202 @@
+#questions{
+	min-height:400px;
+}
+.question {
+  margin-bottom: 40px;
+  border-bottom: solid 1px #f0f0f0;
+  padding-bottom: 20px;
+}
+.question:last-child{
+  margin-bottom: 0px;
+}
+.question h2 {
+  font-weight: 700;
+  color: #666;
+  font-size: 20px;
+}
+.question h2 span{
+  font-size:25px;
+}
+.question:hover h2 {
+  color: #404040;
+}
+#poll-title{
+  margin-top: 50px;
+  font-family: 'Sans Serif';
+  text-transform: uppercase;
+  font-weight:900;
+  color:#404040;
+
+  font-size:40px;
+  /*text-align: center;*/
+}
+section.span8{
+  /*background-color: #D8FFF8;*/
+  width:678px;
+}
+#stats{
+  float : right;
+  margin-top: 5px;
+  border:solid 1px #c0c0c0;
+}
+#stats section{
+  border-bottom: solid 1px #c0c0c0;
+  padding: 6px;
+}
+#stats section h5 span{
+  float:right;
+  border :solid 1px #c0c0c0;
+}
+
+#login-form{
+
+  background-color: #f0f0f0;
+  border: solid 1px #c0c0c0;
+  margin: 0px auto;
+}
+#login-form h3{
+	margin:0;
+	padding:30px;
+background-color: #E0E0E0;
+background-image: -webkit-repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255, 255, 255, .5) 35px, rgba(255, 255, 255, .5) 70px);
+}
+section.submit{
+  padding-bottom: 20px;
+  padding-top: 20px;
+}
+.remove-poll{
+	display:none
+}
+.question-view{
+	margin-bottom: 10px;
+padding-bottom: 20px;
+line-height: 50px;
+border-left: solid 3px #F0F0F0;
+padding-left: 10px;
+
+}
+.question-view:hover{
+	border-color: #c0c0c0;
+}
+.question-view:hover .remove-poll {
+	display:block;
+}
+.question-view h3{
+
+}
+.question-view textarea{
+	width:50%
+}
+#poll-audience{
+	background-color:#f9f9f9;
+	box-shadow:0px 0px 10px rgba(0,0,0,.3) inset;
+	padding:10px;
+}
+#poll-audience div{
+	font-size:11px;
+	color:#666;
+}
+ul.poll-list{
+border: solid 1px lightGrey;
+
+margin:0;
+/*
+  margin: 1px auto;
+    margin-bottom: 0;
+    background: #f6f6f6;
+    border: 1px solid #c0c0c0;
+    box-shadow: 0 1px 1px #606060, 0 1px 1px #2a2a2a inset;
+    -webkit-box-shadow: 0 1px 1px #606060, 0 1px 1px #2a2a2a inset;
+    -moz-box-shadow: 0 1px 1px #606060, 0 1px 1px #2a2a2a inset;
+
+    overflow: hidden;
+    color: white;
+    background: #7EA437 url(../img/backgrounds/menu_bg.png) repeat-x;
+    -webkit-background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+    -o-background-size: 100% 100%;
+    background-size: 100% 100%;
+    background: -webkit-gradient(linear, left top, left bottom, from(#AAD15F), to(#7EA437));
+    background: -webkit-linear-gradient(top, #AAD15F, #7EA437);
+    background: -moz-linear-gradient(top, #AAD15F, #7EA437);
+    background: -ms-linear-gradient(top, #AAD15F, #7EA437);
+    background: -o-linear-gradient(top, #AAD15F, #7EA437);
+    background: linear-gradient(top, #AAD15F, #7EA437);
+    */
+}
+ul.poll-list li{
+list-style:none;
+/*
+  list-style:none;
+    position: relative;
+    border-bottom:1px solid #6C8636;
+    border-bottom:0px solid rgba(255, 255, 255, 0);
+
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+    */
+}
+ul.poll-list a{
+    cursor: pointer;
+  display: block;
+ padding: 10px;
+ border-bottom:solid 1px lightGrey;
+/*
+   height: 32px;
+    line-height: 32px;
+    width: 100%;
+    text-indent: 15px;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    padding: 5px 0px;
+    font-size: 14px;
+    font-weight: bold;
+
+    position:relative;
+    color:#FFF;*/
+}
+#poll-list-container{
+  margin-left: 0;
+}
+.poll-selected{
+  box-shadow: 0px 0px 11px rgba(0,0,0,.5) inset !important;
+}
+.question-display{
+	border-bottom:solid 1px #c0c0c0;
+}
+.question-display:first-child{
+	border-top:solid 1px #c0c0c0;
+}
+.question-display h5 {
+	background: #f0f0f0;
+}
+#poll-stats{
+	border:solid 1px #E2E2E2;
+	background:#F8F8F8;
+	overflow:auto;
+}
+#poll-stats table td{
+	padding:3px;
+	width:33%;
+	text-align:center;
+}
+#poll-stats table {
+	width:100%
+}
+#poll-stats table td h3{
+	font-size:20px
+}
+
+
+#poll-stats table td h5{
+	font-size:12px
+}
+.btn-info:active, .btn-info.active, .btn-info.disabled, .btn-info[disabled]{
+	background-color: #445155;
+}
+.login-box{
+	padding:10px !important;
+}
+
+
+

@@ -1,0 +1,38 @@
+extends layout
+
+block content
+	-if (typeof poll != 'undefined' && poll != ""){
+		script Poll.loadpoll("#{poll}");
+	-}
+	- if(admin)
+		section.well
+			h4 Notify staffs
+			textarea#send-email-recipients(placeholder="Separated by a comma. Ex: ahmed@alliedmaldives.net, everyone@alliedmaldives.net", style="width:100%;box-sizing: border-box;height:140px")
+			button.btn.btn-info#send-email(data-poll=poll) Send Email
+	section.container
+		h2#poll-title
+		hr
+	section.container#questions_container
+		section.span8
+			section#questions
+			section.submit.well
+				button.btn.btn-primary.btn-large#submit-survey All done, submit my poll
+		section.span3
+			section#poll-audience
+		section.span3#stats
+			section
+				h5 Expires on
+					span.badge#poll-expiry
+			section
+				h5 Total Polls Taken
+					span.badge#poll-taken
+	div.modal.hide.fade#modal-newpoll
+		div.modal-header
+			button.close(type="button",data-dismiss="modal",aria-hidden="true")
+			h3 New Poll 
+		div.modal-body
+				
+						
+		div.modal-footer
+			button.btn(data-dismiss="modal",aria-hidden="true") close
+			button.btn.btn-primary Save changes 

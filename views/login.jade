@@ -1,0 +1,32 @@
+doctype 5
+html
+	head
+		title Survey form
+		link(rel='stylesheet', href='/stylesheets/bootstrap.css')
+		link(rel='stylesheet', href='/stylesheets/style.css')
+	body
+		style td{vertical-align:middle}
+		section.container(style='margin-top:150px')
+			section.row
+				section#login-form
+					h3 Login with your windows credentials
+					form(method="post", action="/", style='padding:50px')
+						table
+							tr
+
+								td
+									section.control-group
+										section.controls
+											section.input-prepend
+												input.span5.login-box(type="text", name="username", placeholder="username")
+							tr(style='border-bottom:solid 1px #c0c0c0')
+								td &nbsp;
+							tr
+								td(style='padding-top:35px')
+									section.control-group
+										section.controls
+											section.input-prepend
+												input.span5.login-box(type="password", name="pass",  placeholder="password")
+						input.btn.btn-primary.btn-large(type="submit", value="Login")
+				section(style='margin:15px 0px;text-align:center;')
+					small Created by IT

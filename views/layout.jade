@@ -1,0 +1,40 @@
+doctype 5
+html
+	head
+		title Survey form
+		link(rel='icon',  type="image/x-icon", href='/images/favicon.ico')
+		link(rel='stylesheet', href='/stylesheets/bootstrap.css')
+		link(rel='stylesheet', href='/stylesheets/style.css')
+		link(rel='stylesheet', href='/stylesheets/datepicker.css')
+		//link href='http://fonts.googleapis.com/css?family=Gabriela' rel='stylesheet' type='text/css'>
+		//link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Berkshire+Swash')
+		link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Cinzel:700,900')
+		script(src="/javascripts/jquery.js")
+		script(src="/javascripts/moment.min.js")
+		script(src="/javascripts/bootstrap.js")
+		script(src="/javascripts/bootstrap-datepicker.js")
+		script(src="/templates.js")
+		script(src="/javascripts/poll.js")
+
+		//script setTimeout(function(){window.location.reload(true)}, 300);
+	body
+		div.navbar.navbar-inverse.navbar-fixed-top
+			div.navbar-inner
+				div.container
+					ul.nav
+						- if(admin)
+							li
+								a(href="/admin") Admin
+							li.dropdown 
+								a.dropdown-toggle(href="#", data-toggle="dropdown") Polls 
+									b.caret
+								ul.dropdown-menu#poll-menu
+								
+					ul.nav.pull-right
+						- if(admin)
+							li
+								a(href="/new-poll") New Poll
+						li
+							a(href="/logout") Logout
+		section.container(style='padding-top:70px')
+			block content
