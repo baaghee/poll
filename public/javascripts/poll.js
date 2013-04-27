@@ -184,16 +184,9 @@ $(function(){
 			return alert("Please type a name for this poll");
 		}
 		var type = $("#poll-type .btn.active").text();
-		if(type == ""){
-			return alert("Please select a type");
-		}
 		var questions = $(".question-view");
 		if(questions.length == 0){
 			return alert("Please create few questions");
-		}
-		var expire = $("#poll-expiry").val();
-		if(expire == ""){
-			return alert("set an expiry date");
 		}
 		var questions_data = [];
 		var done = true;
@@ -225,16 +218,14 @@ $(function(){
 		}
 		var data = JSON.stringify({
 			title:title,
-			questions:questions_data,
-			type:type,
-			expire:expire
+			questions:questions_data
 		});
 		console.log(data);
 		$.post('/create-poll', {data:data}, function(res){
 			window.location = 'http://'+ window.location.host + "/" + res._id;
 		});
 	});
-	
+	var p_data;
 	$("body").on("click", "#poll-retrieve li a", function(){
 		var self = $(this);
 		self.parent().siblings().removeClass('poll-selected');
@@ -242,152 +233,16 @@ $(function(){
 		var id = $(this).attr("data-id");
 		id = id.replace(/\"/g, "");
 		$.getJSON("/poll/" + id, function(data){
-			var normalize = {
-				title : data.poll.title,
-				total_polls : data.data.length,
-				daily_polls: 0,
-				expire:moment(data.poll.expire).format("MMM Do"),
-				created:moment(data.poll.date).format("MMM Do")
-			}
-			
-			//extract dates
-			var dates = {}
-			data.data.forEach(function(question){
-				var created = new Date(question.date);
-				var poll_date = created.getDate() +"/" +  (created.getMonth() + 1) + "/"  +created.getUTCFullYear();
-				if(poll_date in dates){
-					dates[poll_date] = dates[poll_date] + 1;
-				}else{
-					dates[poll_date] =  1
-				}
-			});
-			
-			var norm = [];
-			for(date in dates){
-				var o = {};
-				o.name = date;
-				o.y = dates[date];
-				norm.push(o);
-			}	
-			normalize.daily_polls = norm;
-			
-			var rendered = jade.render("poll-display", normalize);
-			$("#statistics").html(rendered);
-			
-
-			
-			//draw
-				// Instantiate and render the chart
-				new Highcharts.Chart({
-				    chart: {
-				        renderTo: 'linegraph',
-				        plotBackgroundColor: null,
-				        plotBorderWidth: null,
-				        plotShadow: false
-				    },
-				    title: {
-				        text: 'History'
-				    },
-				    tooltip: {
-					    pointFormat: '{series.name}: <b>{point.y}</b>',
-				    	percentageDecimals: 1
-				    },
-				    plotOptions: {
-				        pie: {
-				            allowPointSelect: true,
-				            cursor: 'pointer',
-				            dataLabels: {
-				                enabled: true,
-				                color: '#000000',
-				                connectorColor: '#000000',
-				                formatter: function() {
-				                	console.log(this.point);
-				                    return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
-				                }
-				            }
-				        }
-				    },
-				    series: [{
-				        type: 'pie',
-				        name: 'Polls taken',
-				        data: normalize.daily_polls
-				    }]
-				});
-				//create sections for all questions
-				data.poll.questions.forEach(function(question){
-					var id = question._id;
-					$("#questions-display").append(jade.render("question-display", question));
-					
-					//find answers of the questions
-					var q = {};
-					var cont = true;
-					data.data.forEach(function(p){
-						p.answers.forEach(function(ans){
-							
-							if(typeof question.text != 'undefined' && question.text > 0){
-								if(typeof ans.answer == 'string'){
-									return $("#q" + id).append("<h4>"+user_answers+"</h4>");
-								}
-								ans.answer.forEach(function(user_answers){
-									$("#q" + id).append("<h4>"+user_answers+"</h4>");
-								});
-								cont = false;
-							}else if(ans.question == id){
-								q[ans.answer] = typeof  q[ans.answer] == "undefined" ? 1 : q[ans.answer] += 1;
-							}						
-						});
-					});
-					if(cont == false){
-						return;
-					}
-					var norm = [];
-					for(a in q){
-						var o = {};
-						o.name = a;
-						o.y = q[a];
-						norm.push(o);
-					}
-					//render chart for each question
-					new Highcharts.Chart({
-						chart: {
-						    renderTo: "q" + id,
-						    plotBackgroundColor: null,
-						    plotBorderWidth: null,
-						    plotShadow: false
-						},
-						title: {
-						    text: 'History'
-						},
-						tooltip: {
-							pointFormat: '{series.name}: <b>{point.y}</b>',
-							percentageDecimals: 1
-						},
-						plotOptions: {
-						    pie: {
-						        allowPointSelect: true,
-						        cursor: 'pointer',
-						        dataLabels: {
-						            enabled: true,
-						            color: '#000000',
-						            connectorColor: '#000000',
-						            formatter: function() {
-						            	console.log(this.point);
-						                return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
-						            }
-						        }
-						    }
-						},
-						series: [{
-						    type: 'pie',
-						    name: 'Polls taken',
-						    data: norm
-						}]
-					});
-
-	
-				});
-						
-			
+			p_data = data;
+			render()
+		});
+	});
+	$("body").on('click', '#filter', function(){
+		var from = encodeURIComponent($("#ffrom").val());
+		var to = encodeURIComponent($("#fto").val());
+		$.getJSON("/poll/" + p_data.poll._id + "/filter?from="+from+"&to=" + to, function(data){
+			p_data = data;
+			render();
 		});
 	});
 	$("#send-email").click(function(){
@@ -396,19 +251,124 @@ $(function(){
 		$.post("/invite",{poll:poll, emails:emails}, function(){
 			alert("Emails sent");
 		});
-	})
+	});
+	$("#poll-retrieve li a").trigger('click');
+	function render(){
+		var data =  p_data;
+		var normalize = {
+			title : data.poll.title,
+			total_polls : data.data.length,
+			daily_polls: 0,
+			expire:moment(data.poll.expire).format("MMM Do"),
+			created:moment(data.poll.date).format("MMM Do")
+		}
+	
+		//extract dates
+		var dates = {}
+		data.data.forEach(function(question){
+			var created = new Date(question.date);
+			var poll_date = created.getDate() +"/" +  (created.getMonth() + 1) + "/"  +created.getUTCFullYear();
+			if(poll_date in dates){
+				dates[poll_date] = dates[poll_date] + 1;
+			}else{
+				dates[poll_date] =  1
+			}
+		});
+	
+		var norm = [];
+		for(date in dates){
+			var o = {};
+			o.name = date;
+			o.y = dates[date];
+			norm.push(o);
+		}	
+		normalize.daily_polls = norm;
+	
+		var rendered = jade.render("poll-display", normalize);
+		$("#statistics").html(rendered);
+	
+
+	
+		//draw
+			// Instantiate and render the chart
+
+			//create sections for all questions
+			data.poll.questions.forEach(function(question){
+				var id = question._id;
+				$("#questions-display").append(jade.render("question-display", question));
+			
+				//find answers of the questions
+				var q = {};
+				var cont = true;
+				data.data.forEach(function(p){
+					p.answers.forEach(function(ans){
+					
+						if(typeof question.text != 'undefined' && question.text > 0){
+							if(typeof ans.answer == 'string'){
+								return $("#q" + id).append("<h4>"+user_answers+"</h4>");
+							}
+							ans.answer.forEach(function(user_answers){
+								$("#q" + id).append("<h4>"+user_answers+"</h4>");
+							});
+							cont = false;
+						}else if(ans.question == id){
+							q[ans.answer] = typeof  q[ans.answer] == "undefined" ? 1 : q[ans.answer] += 1;
+						}						
+					});
+				});
+				if(cont == false){
+					return;
+				}
+				var norm = [];
+				for(a in q){
+					var o = {};
+					o.name = a;
+					o.y = q[a];
+					norm.push(o);
+				}
+				//render chart for each question
+				new Highcharts.Chart({
+					chart: {
+						renderTo: "q" + id,
+						plotBackgroundColor: null,
+						plotBorderWidth: null,
+						plotShadow: false
+					},
+					title: {
+						text: ''
+					},
+					tooltip: {
+						pointFormat: '{series.name}: <b>{point.y}</b>',
+						percentageDecimals: 1
+					},
+					plotOptions: {
+						pie: {
+						    allowPointSelect: true,
+						    cursor: 'pointer',
+						    dataLabels: {
+						        enabled: true,
+						        color: '#000000',
+						        connectorColor: '#000000',
+						        formatter: function() {
+						        	console.log(this.point);
+						            return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+						        }
+						    }
+						}
+					},
+					series: [{
+						type: 'pie',
+						name: 'Polls taken',
+						data: norm
+					}]
+				});
+
+
+			});
+					
+	}
+
+
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 

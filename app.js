@@ -10,7 +10,6 @@ var express = require('express')
   , path = require('path')
   , mongoose = require('mongoose')
   , server = require('http').createServer(app)
-  , io = require('socket.io').listen(server)
   , passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy
   , MongoStore = require('connect-mongo')(express)
@@ -23,7 +22,7 @@ nodemailer.SMTP = {
 	host: 'mail.alliedmaldives.net'
 } 
 
-var sessionStore = new MongoStore({db:'poll'});
+var sessionStore = new MongoStore({db:'polls_common'});
 
 passport.use(new LocalStrategy({
 		usernameField: 'username',
@@ -77,8 +76,8 @@ passport.deserializeUser(function(id, done) {
   done(null, id);
 });
 
-io.set('log level', 1)
-var db = mongoose.createConnection('localhost', 'poll');
+
+var db = mongoose.createConnection('localhost', 'polls_common');
 var schema = mongoose.Schema({
 	title:'string',
 	date:'date',
@@ -185,7 +184,6 @@ app.post('/new-survey', authenticate, function(req,res){
 	var survey = new Survey({answers:answers, ip:req.ip, date:new Date()});
 	survey.save(function(){
 		Survey.count({}, function(err, count){
-			io.sockets.emit("count",{count:count});
 		});
 		res.end();
 	});
@@ -231,8 +229,8 @@ app.post('/submit-poll', function(req, res){
 		cemail:req.body.cemail,
 		cvilla:req.body.cvilla,
 		cnationality:req.body.cnationality,
-		cfrom:req.body.cfrom,
-		cto:req.body.cto
+		cfrom:new Date(req.body.cfrom),
+		cto:new Date(req.body.cto)
 	}
 
 	var poll = new Submitted(data);
@@ -252,6 +250,23 @@ app.get('/poll/:id', function(req, res){
 		poll.created = moment(poll.date).format("MMM Do");
 		poll.expire = moment(poll.expire).format("MMM Do");
 		Submitted.find({poll_id:id}, function(err, polls_taken){
+			data.poll = poll;
+			data.data = polls_taken;
+			res.json(data);
+		});
+	});
+});
+app.get('/poll/:id/filter', function(req, res){
+	var id = req.params.id;
+	var from = new Date(req.query.from);
+	var to = new Date(req.query.to);
+	var data = {};
+	
+	Poll.findOne({_id:id}, function(err, poll){
+		if(err) throw err;
+		poll.created = moment(poll.date).format("MMM Do");
+		poll.expire = moment(poll.expire).format("MMM Do");
+		Submitted.find({poll_id:id, cfrom:{$gte:from}, cto:{$lt:to}}, function(err, polls_taken){
 			data.poll = poll;
 			data.data = polls_taken;
 			res.json(data);

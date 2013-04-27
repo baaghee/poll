@@ -6,12 +6,11 @@ section#poll-stats
 				td
 					h3 Total polls
 					h5=total_polls
-				td
-					h3 Created
-					h5=created
-				td
-					h3 Expire
-					h5=expire
-section#linegraph(style="width: 500px; height: 300px;")
+//section#linegraph(style="width: 500px; height: 300px;")
+section
+	input(type='text', placeholder='from')#ffrom.dp
+	input(type='text', placeholder='to')#fto.dp
+	button.btn#filter Filter
 section#questions-display
 	h3 questions
+script $(".dp").datepicker()

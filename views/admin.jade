@@ -3,8 +3,7 @@ extends layout
 block content
 	//script(type="text/javascript", src="http://yui.yahooapis.com/3.9.0/build/yui/yui-min.js")
 	script(type="text/javascript", src="http://code.highcharts.com/highcharts.js")
-	h2 polls
-	div#poll-list-container.span3 
+	div#poll-list-container.span3.hide
 		ul.poll-list#poll-retrieve
 			-each poll in polls
 				li
