@@ -40,7 +40,7 @@ Poll.loadpoll = function(id){
 				html = '<div>'+textboxes+'</div>';			
 			}
 			
-			$("#questions").append("<section class='question' data-id='"+ item._id +"' data-type='"+ type +"' data-required='"+ item.required +"'><h2><span>"+ (index + 1) + '</span>&nbsp;&nbsp;' + item.title +"</h2><section class='survey-content'>"+html+"</section></section>");
+			$("#questions").append("<section class='question' data-id='"+ item._id +"' data-type='"+ type +"' data-required='"+ item.required +"'><h2><section class='survey-content' style='float:right'>"+html+"</section><span>"+ (index + 1) + '</span>&nbsp;&nbsp;' + item.title +"</h2></section>");
 		});
 	
 	});
